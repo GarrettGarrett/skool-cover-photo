@@ -127,3 +127,6 @@ export {
   ToastClose,
   ToastAction,
 }
+
+// Add this export
+export type ToastOptions = React.ComponentPropsWithoutRef<typeof Toast>
