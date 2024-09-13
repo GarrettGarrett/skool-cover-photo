@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef, useCallback } from 'react'
+import React, { forwardRef, useCallback } from 'react'
 import Draggable, { DraggableEvent, DraggableData, DraggableProps } from 'react-draggable'
 
 interface Image {
