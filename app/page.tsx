@@ -85,17 +85,7 @@ export default function Page() {
           onSubmit={handleFeedbackSubmit}
           status={feedbackStatus}
         />
-        {toasts.map((toast, index) => (
-          <div
-            key={index}
-            className={`fixed bottom-4 right-4 p-4 rounded-md shadow-md ${
-              toast.variant === 'destructive' ? 'bg-[#E74C3D]' : 'bg-[#009E5D]'
-            } text-white`}
-          >
-            <h3 className="font-bold">{toast.title}</h3>
-            <p>{toast.description}</p>
-          </div>
-        ))}
+        
       </main>
     </div>
   )
