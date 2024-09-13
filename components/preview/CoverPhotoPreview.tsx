@@ -42,10 +42,9 @@ const DraggableWrapper: React.FC<DraggableProps & { children: React.ReactNode }>
 
 export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewProps>(
   ({ options, onPositionChange }, ref) => {
-    const containerRef = useRef<HTMLDivElement>(null)
 
     const getBackgroundStyle = () => {
-      let style: React.CSSProperties = {}
+      const style: React.CSSProperties = {}
 
       switch (options.backgroundType) {
         case 'color':
@@ -69,7 +68,7 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
     const getPatternStyle = () => {
       if (options.patternType === 'none') return null;
 
-      let patternStyle: React.CSSProperties = {
+      const patternStyle: React.CSSProperties = {
         position: 'absolute',
         top: 0,
         left: 0,

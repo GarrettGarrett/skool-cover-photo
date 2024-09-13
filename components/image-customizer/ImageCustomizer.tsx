@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
+import Image from 'next/image'
 
 interface Image {
   id: string;
@@ -60,7 +61,13 @@ export function ImageCustomizer({
         <Card key={image.id}>
           <CardContent className="p-4">
             <div className="flex items-center space-x-4">
-              <img src={image.url} alt="Uploaded image" className="w-20 h-20 object-cover" />
+              <Image
+                src={image.url}
+                alt="Uploaded image"
+                width={80}
+                height={80}
+                objectFit="cover"
+              />
               <div className="flex-grow">
                 <Label htmlFor={`image-size-${image.id}`}>Image Size</Label>
                 {/* spacer */}

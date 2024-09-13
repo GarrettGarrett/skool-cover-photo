@@ -286,6 +286,7 @@ const mobilePreset: CustomizationOptions = {
 
 export function CoverPhotoBuilder() {
   const [options, setOptions] = useState<CustomizationOptions>(desktopPreset)
+  const [hasUserMadeChanges, setHasUserMadeChanges] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
   const [isDevMode, setIsDevMode] = useState(false)
 
@@ -295,33 +296,38 @@ export function CoverPhotoBuilder() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setOptions(mobilePreset)
-      } else if (window.innerWidth < 900) {
-        setOptions(smallMediumPreset)
-      } else if (window.innerWidth < 1024) {
-        setOptions(mediumPreset)
-      } else if (window.innerWidth < 1200) {
-        setOptions(mediumLargePreset)
-      } else if (window.innerWidth < 1400) {
-        setOptions(largePreset)
-      } else {
-        setOptions(desktopPreset)
+      if (!hasUserMadeChanges) {
+        if (window.innerWidth < 768) {
+          setOptions(mobilePreset)
+        } else if (window.innerWidth < 900) {
+          setOptions(smallMediumPreset)
+        } else if (window.innerWidth < 1024) {
+          setOptions(mediumPreset)
+        } else if (window.innerWidth < 1200) {
+          setOptions(mediumLargePreset)
+        } else if (window.innerWidth < 1400) {
+          setOptions(largePreset)
+        } else {
+          setOptions(desktopPreset)
+        }
       }
     }
 
-    // Set initial preset
-    handleResize()
+    // Set initial preset only if user hasn't made changes
+    if (!hasUserMadeChanges) {
+      handleResize()
+    }
 
     // Add event listener
     window.addEventListener('resize', handleResize)
 
     // Clean up
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  }, [hasUserMadeChanges])
 
   const updateOption = (key: keyof CustomizationOptions, value: any) => {
     setOptions(prev => ({ ...prev, [key]: value }))
+    setHasUserMadeChanges(true)
   }
 
   const handlePositionChange = (element: 'title' | 'subtitle' | string, position: { x: number, y: number }) => {
