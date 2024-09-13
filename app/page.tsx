@@ -43,7 +43,6 @@ export default function Page() {
         throw new Error(result.error || "Failed to send feedback");
       }
     } catch (error) {
-      console.error("Error sending feedback:", error);
       setFeedbackStatus("error");
       toast({
         title: "Error",
@@ -56,11 +55,9 @@ export default function Page() {
   }, [feedback, toast]);
 
   const handleOpenFeedbackDialog = useCallback(() => {
-    console.log("Opening feedback dialog");
     setFeedbackDialogOpen(true);
   }, []);
 
-  console.log("Feedback dialog open state:", feedbackDialogOpen);
 
   return (
     <div className="flex flex-col min-h-screen">

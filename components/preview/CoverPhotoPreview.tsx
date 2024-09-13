@@ -1,5 +1,4 @@
-import React, { forwardRef, useCallback } from 'react'
-import Draggable, { DraggableEvent, DraggableData, DraggableProps } from 'react-draggable'
+import React, { forwardRef, useCallback, useState } from 'react'
 
 interface Image {
   id: string;
@@ -33,16 +32,32 @@ interface CoverPhotoPreviewProps {
   onPositionChange: (element: 'title' | 'subtitle' | string, position: { x: number, y: number }) => void
 }
 
-const DraggableWrapper: React.FC<DraggableProps & { children: React.ReactNode }> = (props) => {
-  if (process.env.NODE_ENV === 'production') {
-    const { onStart, onDrag, onStop, axis, handle, cancel, grid, scale, bounds, defaultPosition, position, positionOffset, onMouseDown, ...divProps } = props;
-    return <div {...divProps} onMouseDown={onMouseDown as unknown as React.MouseEventHandler<HTMLDivElement>}>{props.children}</div>
-  }
-  return <Draggable {...props} />
-}
-
 export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewProps>(
   ({ options, onPositionChange }, ref) => {
+    const [isDragging, setIsDragging] = useState(false)
+    const [draggedElement, setDraggedElement] = useState<string | null>(null)
+
+    const handleDragStart = useCallback((element: 'title' | 'subtitle' | string) => {
+      setIsDragging(true)
+      setDraggedElement(element)
+    }, [])
+
+    const handleDragEnd = useCallback(() => {
+      setIsDragging(false)
+      setDraggedElement(null)
+    }, [])
+
+    const handleDrag = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+      if (isDragging && draggedElement) {
+        const container = e.currentTarget.closest('.preview-content')
+        if (container) {
+          const rect = container.getBoundingClientRect()
+          const x = ((e.clientX - rect.left) / rect.width) * 100
+          const y = ((e.clientY - rect.top) / rect.height) * 100
+          onPositionChange(draggedElement, { x: Math.max(0, Math.min(x, 100)), y: Math.max(0, Math.min(y, 100)) })
+        }
+      }
+    }, [isDragging, draggedElement, onPositionChange])
 
     const getBackgroundStyle = () => {
       const style: React.CSSProperties = {}
@@ -112,83 +127,60 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
       return patternStyle
     }
 
-    const handleDrag = useCallback((element: 'title' | 'subtitle' | string, e: DraggableEvent, data: DraggableData) => {
-      onPositionChange(element, { x: Math.round(data.x), y: Math.round(data.y) })
-    }, [onPositionChange])
-
     const renderContent = () => {
       return (
         <>
           {options.images.map((image) => (
-            <DraggableWrapper
-              {...Draggable.defaultProps} // Spread default props to include all required properties
+            <div
               key={image.id}
-              onDrag={(e, data) => handleDrag(image.id, e, data)}
-              position={image.position}
-              bounds="parent"
-            >
-              <div className="absolute cursor-move" style={{ touchAction: 'none' }}>
-                <div
-                  style={{
-                    width: `${Math.round(image.size)}px`,
-                    height: `${Math.round(image.size)}px`,
-                    backgroundImage: `url(${image.url})`,
-                    backgroundSize: 'contain',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
-                    userSelect: 'none',
-                    pointerEvents: 'none',
-                    backfaceVisibility: 'hidden',
-                    transform: 'translateZ(0)'
-                  }}
-                />
-              </div>
-            </DraggableWrapper>
+              className="absolute cursor-move"
+              style={{
+                left: `${image.position.x}%`,
+                top: `${image.position.y}%`,
+                width: `${image.size}px`,
+                height: `${image.size}px`,
+                backgroundImage: `url(${image.url})`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                userSelect: 'none',
+                touchAction: 'none',
+              }}
+              onMouseDown={() => handleDragStart(image.id)}
+            />
           ))}
-          <DraggableWrapper
-            {...Draggable.defaultProps} // Spread default props to include all required properties
-            onDrag={(e, data) => handleDrag('title', e, data)}
-            position={options.titlePosition}
-            bounds="parent"
+          <div
+            className="absolute cursor-move"
+            style={{
+              left: `${options.titlePosition.x}%`,
+              top: `${options.titlePosition.y}%`,
+              fontFamily: options.titleFont,
+              fontSize: `${Math.round(parseFloat(options.titleSize))}px`,
+              color: options.titleColor,
+              userSelect: 'none',
+              whiteSpace: 'nowrap',
+              touchAction: 'none',
+            }}
+            onMouseDown={() => handleDragStart('title')}
           >
-            <h1 
-              className="absolute cursor-move"
-              style={{ 
-                fontFamily: options.titleFont, 
-                fontSize: `${Math.round(parseFloat(options.titleSize))}px`, 
-                color: options.titleColor, 
-                userSelect: 'none',
-                whiteSpace: 'nowrap',
-                backfaceVisibility: 'hidden',
-                transform: 'translateZ(0)',
-                touchAction: 'none'
-              }}
-            >
-              {options.title}
-            </h1>
-          </DraggableWrapper>
-          <DraggableWrapper
-            {...Draggable.defaultProps} // Spread default props to include all required properties
-            onDrag={(e, data) => handleDrag('subtitle', e, data)}
-            position={options.subtitlePosition}
-            bounds="parent"
+            {options.title}
+          </div>
+          <div
+            className="absolute cursor-move"
+            style={{
+              left: `${options.subtitlePosition.x}%`,
+              top: `${options.subtitlePosition.y}%`,
+              fontFamily: options.subtitleFont,
+              fontSize: `${Math.round(parseFloat(options.subtitleSize))}px`,
+              color: options.subtitleColor,
+              userSelect: 'none',
+              whiteSpace: 'nowrap',
+              touchAction: 'none',
+            }}
+            onMouseDown={() => handleDragStart('subtitle')}
           >
-            <h2 
-              className="absolute cursor-move"
-              style={{ 
-                fontFamily: options.subtitleFont, 
-                fontSize: `${Math.round(parseFloat(options.subtitleSize))}px`, 
-                color: options.subtitleColor, 
-                userSelect: 'none',
-                whiteSpace: 'nowrap',
-                backfaceVisibility: 'hidden',
-                transform: 'translateZ(0)',
-                touchAction: 'none'
-              }}
-            >
-              {options.subtitle}
-            </h2>
-          </DraggableWrapper>
+            {options.subtitle}
+          </div>
         </>
       )
     }
@@ -196,37 +188,28 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
     const patternStyle = getPatternStyle()
 
     return (
-      <div className="w-full max-w-[1084px] mx-auto">
-        <svg width="0" height="0">
-          <defs>
-            <filter id="blur-filter">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
-            </filter>
-          </defs>
-        </svg>
+      <div className="w-full" style={{ paddingBottom: '53.14%', position: 'relative' }}>
         <div 
-          className="relative w-full"
-          style={{ paddingBottom: '53.14%' }}
+          ref={ref}
+          className="absolute top-0 left-0 w-full h-full overflow-hidden preview-content rounded-lg" 
+          style={getBackgroundStyle()}
+          onMouseMove={handleDrag}
+          onMouseUp={handleDragEnd}
+          onMouseLeave={handleDragEnd}
         >
-          <div 
-            ref={ref}
-            className="absolute top-0 left-0 w-full h-full overflow-visible preview-content rounded-lg" 
-            style={getBackgroundStyle()}
-          >
-            {patternStyle && (
-              <div className="pattern-container" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}>
-                <div style={patternStyle} className="pattern-overlay" />
-              </div>
-            )}
-            {renderContent()}
-          </div>
-          <div 
-            className="absolute top-0 left-0 w-full h-full pointer-events-none rounded-lg" 
-            style={{
-              boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.1)',
-            }}
-          />
+          {patternStyle && (
+            <div className="pattern-container absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
+              <div style={patternStyle} className="pattern-overlay" />
+            </div>
+          )}
+          {renderContent()}
         </div>
+        <div 
+          className="absolute top-0 left-0 w-full h-full pointer-events-none rounded-lg" 
+          style={{
+            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.1)',
+          }}
+        />
       </div>
     )
   }

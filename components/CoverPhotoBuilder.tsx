@@ -53,8 +53,8 @@ const desktopPreset: CustomizationOptions = {
       url: "/pencil.png",
       size: 190,
       position: {
-        x: 606,
-        y: 206
+        x: 70,
+        y: 50
       }
     }
   ],
@@ -68,12 +68,12 @@ const desktopPreset: CustomizationOptions = {
   patternType: "graph",
   backgroundImage: null,
   titlePosition: {
-    x: 143,
-    y: 117
+    x: 10,
+    y: 20
   },
   subtitlePosition: {
-    x: 146,
-    y: 252
+    x: 10,
+    y: 40
   },
   patternColor: "#50b9f3",
   patternOpacity: 17
@@ -94,8 +94,8 @@ const largePreset: CustomizationOptions = {
       url: "/pencil.png",
       size: 190,
       position: {
-        x: 440,
-        y: 192
+        x: 70,
+        y: 50
       }
     }
   ],
@@ -109,12 +109,12 @@ const largePreset: CustomizationOptions = {
   patternType: "graph",
   backgroundImage: null,
   titlePosition: {
-    x: 109,
-    y: 87
+    x: 10,
+    y: 20
   },
   subtitlePosition: {
-    x: 117,
-    y: 216
+    x: 10,
+    y: 40
   },
   patternColor: "#50b9f3",
   patternOpacity: 17
@@ -135,8 +135,8 @@ const mediumPreset: CustomizationOptions = {
       url: "/pencil.png",
       size: 149,
       position: {
-        x: 468,
-        y: 195
+        x: 70,
+        y: 50
       }
     }
   ],
@@ -150,12 +150,12 @@ const mediumPreset: CustomizationOptions = {
   patternType: "graph",
   backgroundImage: null,
   titlePosition: {
-    x: 88,
-    y: 89
+    x: 10,
+    y: 20
   },
   subtitlePosition: {
-    x: 171,
-    y: 206
+    x: 10,
+    y: 40
   },
   patternColor: "#50b9f3",
   patternOpacity: 17
@@ -176,8 +176,8 @@ const mediumLargePreset: CustomizationOptions = {
       url: "/pencil.png",
       size: 133,
       position: {
-        x: 436,
-        y: 180
+        x: 70,
+        y: 50
       }
     }
   ],
@@ -191,12 +191,12 @@ const mediumLargePreset: CustomizationOptions = {
   patternType: "graph",
   backgroundImage: null,
   titlePosition: {
-    x: 70,
-    y: 70
+    x: 10,
+    y: 20
   },
   subtitlePosition: {
-    x: 84,
-    y: 181
+    x: 10,
+    y: 40
   },
   patternColor: "#50b9f3",
   patternOpacity: 17
@@ -217,8 +217,8 @@ const smallMediumPreset: CustomizationOptions = {
       url: "/pencil.png",
       size: 149,
       position: {
-        x: 516,
-        y: 229
+        x: 70,
+        y: 50
       }
     }
   ],
@@ -232,12 +232,12 @@ const smallMediumPreset: CustomizationOptions = {
   patternType: "graph",
   backgroundImage: null,
   titlePosition: {
-    x: 145,
-    y: 117
+    x: 10,
+    y: 20
   },
   subtitlePosition: {
-    x: 160,
-    y: 233
+    x: 10,
+    y: 40
   },
   patternColor: "#50b9f3",
   patternOpacity: 17
@@ -258,8 +258,8 @@ const mobilePreset: CustomizationOptions = {
       url: "/pencil.png",
       size: 100,
       position: {
-        x: 273,
-        y: 107
+        x: 70,
+        y: 50
       }
     }
   ],
@@ -273,12 +273,12 @@ const mobilePreset: CustomizationOptions = {
   patternType: "graph",
   backgroundImage: null,
   titlePosition: {
-    x: 26,
-    y: 30
+    x: 10,
+    y: 20
   },
   subtitlePosition: {
-    x: 39,
-    y: 132
+    x: 10,
+    y: 40
   },
   patternColor: "#50b9f3",
   patternOpacity: 17
@@ -347,7 +347,7 @@ export function CoverPhotoBuilder() {
         id: `${new Date().getTime()}-${file.name}`, // Use the unique file name as the ID
         url: e.target?.result as string,
         size: 100, // Initial size in pixels
-        position: { x: 0, y: 0 }
+        position: { x: 70, y: 50 }
       }
       updateOption('images', [...options.images, newImage])
     }
