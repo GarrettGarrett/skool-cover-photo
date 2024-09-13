@@ -15,8 +15,8 @@ export function DownloadOptions({ onDownload }: DownloadOptionsProps) {
 
   const handleDownloadClick = () => {
     onDownload(selectedFormat)
-    posthog.capture('ButtonClicked', {
-      buttonName: 'Cover Photo Download'
+    posthog.capture('Cover Photo Download', {
+      format: selectedFormat
     });
   }
 
