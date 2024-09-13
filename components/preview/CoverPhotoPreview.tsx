@@ -35,7 +35,9 @@ interface CoverPhotoPreviewProps {
 
 const DraggableWrapper: React.FC<DraggableProps & { children: React.ReactNode }> = (props) => {
   if (process.env.NODE_ENV === 'production') {
-    return <div {...props}>{props.children}</div>
+    // Separate Draggable-specific props from standard HTML div props
+    const { onStart, onDrag, onStop, axis, handle, cancel, grid, scale, bounds, defaultPosition, position, positionOffset, ...divProps } = props;
+    return <div {...divProps}>{props.children}</div>
   }
   return <Draggable {...props} />
 }
