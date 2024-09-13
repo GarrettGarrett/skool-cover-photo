@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { usePostHog } from 'posthog-js/react';
 
 interface DownloadOptionsProps {
   onDownload: (format: string) => void
@@ -9,11 +10,14 @@ interface DownloadOptionsProps {
 const formats = ['png', 'jpeg', 'webp']
 
 export function DownloadOptions({ onDownload }: DownloadOptionsProps) {
+  const posthog = usePostHog();
   const [selectedFormat, setSelectedFormat] = React.useState(formats[0])
 
   const handleDownloadClick = () => {
-    console.log('Download button clicked')
     onDownload(selectedFormat)
+    posthog.capture('ButtonClicked', {
+      buttonName: 'Cover Photo Download'
+    });
   }
 
   return (
