@@ -121,6 +121,7 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
         <>
           {options.images.map((image) => (
             <DraggableWrapper
+              {...Draggable.defaultProps} // Spread default props to include all required properties
               key={image.id}
               onDrag={(e, data) => handleDrag(image.id, e, data)}
               position={image.position}
@@ -145,6 +146,7 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
             </DraggableWrapper>
           ))}
           <DraggableWrapper
+            {...Draggable.defaultProps} // Spread default props to include all required properties
             onDrag={(e, data) => handleDrag('title', e, data)}
             position={options.titlePosition}
             bounds="parent"
@@ -166,6 +168,7 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
             </h1>
           </DraggableWrapper>
           <DraggableWrapper
+            {...Draggable.defaultProps} // Spread default props to include all required properties
             onDrag={(e, data) => handleDrag('subtitle', e, data)}
             position={options.subtitlePosition}
             bounds="parent"
