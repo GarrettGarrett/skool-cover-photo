@@ -35,9 +35,8 @@ interface CoverPhotoPreviewProps {
 
 const DraggableWrapper: React.FC<DraggableProps & { children: React.ReactNode }> = (props) => {
   if (process.env.NODE_ENV === 'production') {
-    // Separate Draggable-specific props from standard HTML div props
-    const { onStart, onDrag, onStop, axis, handle, cancel, grid, scale, bounds, defaultPosition, position, positionOffset, ...divProps } = props;
-    return <div {...divProps}>{props.children}</div>
+    const { onStart, onDrag, onStop, axis, handle, cancel, grid, scale, bounds, defaultPosition, position, positionOffset, onMouseDown, ...divProps } = props;
+    return <div {...divProps} onMouseDown={onMouseDown as unknown as React.MouseEventHandler<HTMLDivElement>}>{props.children}</div>
   }
   return <Draggable {...props} />
 }
