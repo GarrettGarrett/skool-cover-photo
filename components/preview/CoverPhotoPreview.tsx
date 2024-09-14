@@ -36,7 +36,7 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
   ({ options, onPositionChange }, ref) => {
     const [isDragging, setIsDragging] = useState(false)
     const [draggedElement, setDraggedElement] = useState<string | null>(null)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const containerRef = useRef<HTMLDivElement | null>(null)
 
     const handleDragStart = useCallback((element: 'title' | 'subtitle' | string, event: React.MouseEvent | React.TouchEvent) => {
       setIsDragging(true)
@@ -131,17 +131,24 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
 
     const patternStyle = getPatternStyle()
 
+    const setRefs = useCallback(
+      (el: HTMLDivElement | null) => {
+        // Handle the forwarded ref
+        if (typeof ref === 'function') {
+          ref(el)
+        } else if (ref) {
+          ref.current = el
+        }
+        // Set the local ref
+        containerRef.current = el
+      },
+      [ref]
+    )
+
     return (
       <div className="w-full" style={{ paddingBottom: '53.14%', position: 'relative' }}>
         <div 
-          ref={(el) => {
-            if (typeof ref === 'function') {
-              ref(el);
-            } else if (ref) {
-              (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
-            }
-            containerRef.current = el;
-          }}
+          ref={setRefs}
           className="absolute top-0 left-0 w-full h-full overflow-hidden preview-content rounded-lg" 
           style={getBackgroundStyle()}
           onMouseMove={handleDrag}
