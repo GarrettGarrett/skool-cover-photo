@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useState } from 'react'
+import React, { forwardRef, useCallback, useState, useRef } from 'react'
 
 interface Image {
   id: string;
@@ -36,10 +36,12 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
   ({ options, onPositionChange }, ref) => {
     const [isDragging, setIsDragging] = useState(false)
     const [draggedElement, setDraggedElement] = useState<string | null>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
 
-    const handleDragStart = useCallback((element: 'title' | 'subtitle' | string) => {
+    const handleDragStart = useCallback((element: 'title' | 'subtitle' | string, event: React.MouseEvent | React.TouchEvent) => {
       setIsDragging(true)
       setDraggedElement(element)
+      event.preventDefault() // Prevent default touch behavior
     }, [])
 
     const handleDragEnd = useCallback(() => {
@@ -47,15 +49,15 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
       setDraggedElement(null)
     }, [])
 
-    const handleDrag = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-      if (isDragging && draggedElement) {
-        const container = e.currentTarget.closest('.preview-content')
-        if (container) {
-          const rect = container.getBoundingClientRect()
-          const x = ((e.clientX - rect.left) / rect.width) * 100
-          const y = ((e.clientY - rect.top) / rect.height) * 100
-          onPositionChange(draggedElement, { x: Math.max(0, Math.min(x, 100)), y: Math.max(0, Math.min(y, 100)) })
-        }
+    const handleDrag = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+      if (isDragging && draggedElement && containerRef.current) {
+        const container = containerRef.current
+        const rect = container.getBoundingClientRect()
+        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+        const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+        const x = ((clientX - rect.left) / rect.width) * 100
+        const y = ((clientY - rect.top) / rect.height) * 100
+        onPositionChange(draggedElement, { x: Math.max(0, Math.min(x, 100)), y: Math.max(0, Math.min(y, 100)) })
       }
     }, [isDragging, draggedElement, onPositionChange])
 
@@ -127,9 +129,32 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
       return patternStyle
     }
 
-    const renderContent = () => {
-      return (
-        <>
+    const patternStyle = getPatternStyle()
+
+    return (
+      <div className="w-full" style={{ paddingBottom: '53.14%', position: 'relative' }}>
+        <div 
+          ref={(el) => {
+            if (typeof ref === 'function') {
+              ref(el);
+            } else if (ref) {
+              (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+            }
+            containerRef.current = el;
+          }}
+          className="absolute top-0 left-0 w-full h-full overflow-hidden preview-content rounded-lg" 
+          style={getBackgroundStyle()}
+          onMouseMove={handleDrag}
+          onMouseUp={handleDragEnd}
+          onMouseLeave={handleDragEnd}
+          onTouchMove={handleDrag}
+          onTouchEnd={handleDragEnd}
+        >
+          {patternStyle && (
+            <div className="pattern-container absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
+              <div style={patternStyle} className="pattern-overlay" />
+            </div>
+          )}
           {options.images.map((image) => (
             <div
               key={image.id}
@@ -146,7 +171,8 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
                 userSelect: 'none',
                 touchAction: 'none',
               }}
-              onMouseDown={() => handleDragStart(image.id)}
+              onMouseDown={(e) => handleDragStart(image.id, e)}
+              onTouchStart={(e) => handleDragStart(image.id, e)}
             />
           ))}
           <div
@@ -161,7 +187,8 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
               whiteSpace: 'nowrap',
               touchAction: 'none',
             }}
-            onMouseDown={() => handleDragStart('title')}
+            onMouseDown={(e) => handleDragStart('title', e)}
+            onTouchStart={(e) => handleDragStart('title', e)}
           >
             {options.title}
           </div>
@@ -177,32 +204,11 @@ export const CoverPhotoPreview = forwardRef<HTMLDivElement, CoverPhotoPreviewPro
               whiteSpace: 'nowrap',
               touchAction: 'none',
             }}
-            onMouseDown={() => handleDragStart('subtitle')}
+            onMouseDown={(e) => handleDragStart('subtitle', e)}
+            onTouchStart={(e) => handleDragStart('subtitle', e)}
           >
             {options.subtitle}
           </div>
-        </>
-      )
-    }
-
-    const patternStyle = getPatternStyle()
-
-    return (
-      <div className="w-full" style={{ paddingBottom: '53.14%', position: 'relative' }}>
-        <div 
-          ref={ref}
-          className="absolute top-0 left-0 w-full h-full overflow-hidden preview-content rounded-lg" 
-          style={getBackgroundStyle()}
-          onMouseMove={handleDrag}
-          onMouseUp={handleDragEnd}
-          onMouseLeave={handleDragEnd}
-        >
-          {patternStyle && (
-            <div className="pattern-container absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
-              <div style={patternStyle} className="pattern-overlay" />
-            </div>
-          )}
-          {renderContent()}
         </div>
         <div 
           className="absolute top-0 left-0 w-full h-full pointer-events-none rounded-lg" 
